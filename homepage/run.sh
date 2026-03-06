@@ -33,4 +33,4 @@ rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
 bashio::log.info "Starting Homepage on internal port 3000..."
-exec npm start
+exec /usr/local/bin/npm start --prefix /app
