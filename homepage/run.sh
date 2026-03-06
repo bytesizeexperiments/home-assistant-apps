@@ -28,25 +28,12 @@ for file in settings.yaml services.yaml widgets.yaml bookmarks.yaml docker.yaml;
     fi
 done
 
-# Map the internal app folder to the persistent HA folder
+# Remove any existing internal config and link it to the persistent HA folder
 rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
-# Link the persistent HA folder
-rm -rf "$INTERNAL_CONFIG"
-ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
+bashio::log.info "Starting Homepage..."
 
-bashio::log.info "Locating Node.js..."
-
-# Try to find the node path dynamically
-NODE_PATH=$(find /usr -name node -type f -executable -print -quit 2>/dev/null || which node)
-
-if [ -z "$NODE_PATH" ]; then
-    bashio::log.error "Node.js not found! App cannot start."
-    exit 1
-fi
-
-bashio::log.info "Starting Homepage server using $NODE_PATH..."
-
+# Since we installed npm in the Dockerfile, we can use the standard start command
 cd /app
-exec "$NODE_PATH" src/server.js
+exec npm start
