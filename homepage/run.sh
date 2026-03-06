@@ -22,28 +22,31 @@ for file in settings.yaml services.yaml widgets.yaml bookmarks.yaml docker.yaml;
     fi
 done
 
-# --- FIXED DYNAMIC AUTOMATION BLOCK ---
+# --- DYNAMIC SLUG DETECTION ---
 bashio::log.info "Dynamically detecting Ingress slug..."
 
-# Use the more reliable bashio config call to get the slug
-SLUG=$(bashio::addon.slug)
-if [ -z "$SLUG" ]; then
-    # Fallback: Try to get it from the hostname if bashio fails
+# Query the Supervisor API directly for the slug
+# This bypasses the 'command not found' error
+SLUG=$(curl -s -X GET \
+    -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
+    -H "Content-Type: application/json" \
+    http://supervisor/addons/self/info | jq -r '.data.slug')
+
+if [ -z "$SLUG" ] || [ "$SLUG" == "null" ]; then
+    bashio::log.warn "Could not detect slug via API, falling back to hostname"
     SLUG=$(hostname)
 fi
 
 INGRESS_BASE="/api/hassio_ingress/${SLUG}/"
 bashio::log.info "Detected slug: ${SLUG}. Setting base to ${INGRESS_BASE}"
 
-# Ensure settings.yaml exists before editing
+# Ensure settings.yaml exists and remove old base lines
 touch "$SETTINGS_FILE"
-
-# Remove any existing 'base:' lines to avoid duplicates
 sed -i '/^base:/d' "$SETTINGS_FILE"
 
 # Prepend the correct dynamic base path to the top of settings.yaml
 echo "base: ${INGRESS_BASE}" | cat - "$SETTINGS_FILE" > temp && mv temp "$SETTINGS_FILE"
-# --------------------------------------
+# ------------------------------
 
 # Link the persistent HA folder
 rm -rf "$INTERNAL_CONFIG"
