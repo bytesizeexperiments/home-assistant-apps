@@ -1,6 +1,6 @@
 name: "Homepage"
 description: "The highly customizable dashboard for your homelab."
-version: "1.0.0"
+version: "1.10.1"
 slug: "homepage"
 url: "https://github.com/gethomepage/homepage"
 maintainer: "Byte Size Experiments"
