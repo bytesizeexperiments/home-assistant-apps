@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-# 1. Manually set the PATH to include common Node.js locations
-export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
-
-# Load bashio functions
+# Load bashio functions manually
 source /usr/lib/bashio/bashio.sh
 
-# HA Maps addon_config to /addon_config in the container
+# Path setup
 CONFIG_DIR="/addon_config"
 INTERNAL_CONFIG="/app/config"
 
 bashio::log.info "Checking for existing Homepage configuration..."
 
+# Create persistent directory
 mkdir -p "$CONFIG_DIR"
+
+# Ensure internal app folder exists
 mkdir -p /app
 
-# Seed default YAML files
+# Seed default files from image if they don't exist in HA storage
 for file in settings.yaml services.yaml widgets.yaml bookmarks.yaml docker.yaml; do
     if [ ! -f "$CONFIG_DIR/$file" ]; then
         if [ -f "$INTERNAL_CONFIG/$file" ]; then
@@ -28,13 +28,13 @@ for file in settings.yaml services.yaml widgets.yaml bookmarks.yaml docker.yaml;
     fi
 done
 
-# Link the persistent HA folder
+# Map the internal app folder to the persistent HA folder
 rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
-# 2. Final verification and startup
-NODE_BIN=$(command -v node)
-bashio::log.info "Starting Homepage using node found at: $NODE_BIN"
+# Determine Node path and start
+NODE_BIN=$(which node || echo "/usr/local/bin/node")
+bashio::log.info "Starting Homepage server..."
 
 cd /app
 exec "$NODE_BIN" src/server.js
