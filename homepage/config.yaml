@@ -1,0 +1,21 @@
+name: "Homepage"
+description: "The highly customizable dashboard for your homelab."
+version: "1.0.0"
+slug: "homepage"
+url: "https://github.com/gethomepage/homepage"
+maintainer: "Byte Size Experiments"
+arch:
+  - aarch64
+  - amd64
+startup: "application"
+boot: "auto"
+ingress: true
+ingress_port: 3000
+panel_icon: "mdi:home-screen"
+panel_title: "Homepage"
+# This creates the UI for port selection
+ports:
+  3000/tcp: 3000
+map:
+  - config:rw  # Maps to /config/homepage in HA
+docker_api: true # Allows Homepage to auto-discover other containers

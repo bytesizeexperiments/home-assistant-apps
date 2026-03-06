@@ -1,0 +1,45 @@
+name: "Sync Homepage Version"
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs every night at midnight
+  workflow_dispatch:   # Allows you to run it manually from the 'Actions' tab
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Crucial: Allows the action to push changes back to your repo
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Latest Homepage Release
+        id: homepage
+        run: |
+          # Get the latest tag from the official repo (e.g., v0.15.0)
+          LATEST_TAG=$(curl -s https://api.github.com/repos/gethomepage/homepage/releases/latest | jq -r .tag_name)
+          # Strip the 'v' for the HA config version (e.g., 0.15.0)
+          CLEAN_VER=${LATEST_TAG#v}
+          
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "version=$CLEAN_VER" >> $GITHUB_OUTPUT
+
+      - name: Update Files
+        run: |
+          TAG="${{ steps.homepage.outputs.tag }}"
+          VER="${{ steps.homepage.outputs.version }}"
+          
+          # 1. Update the version in homepage/config.yaml
+          # Looking for 'version: "X.X.X"' and replacing it
+          sed -i "s/^version: .*/version: \"$VER\"/" homepage/config.yaml
+          
+          # 2. Update the Dockerfile base image to the specific version
+          # Looking for 'FROM gethomepage/homepage:XXX'
+          sed -i "s|FROM gethomepage/homepage:.*|FROM gethomepage/homepage:$TAG|" homepage/Dockerfile
+
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(deps): bump Homepage to ${{ steps.homepage.outputs.tag }}"
+          file_pattern: "homepage/config.yaml homepage/Dockerfile"
