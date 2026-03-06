@@ -25,6 +25,8 @@ RUN curl -J -L -o /tmp/bashio.tar.gz https://github.com/hassio-addons/bashio/arc
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 COPY run.sh /
 RUN chmod a+x /run.sh
 

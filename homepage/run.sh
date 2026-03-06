@@ -12,7 +12,7 @@ bashio::log.info "Checking for existing Homepage configuration..."
 # Create persistent directory if it doesn't exist
 mkdir -p "$CONFIG_DIR"
 
-# NEW: Ensure the internal /app directory exists
+# Ensure the internal /app directory exists (where the app code lives)
 mkdir -p /app
 
 # Seed default YAML files if they don't exist in /addon_config
@@ -32,6 +32,8 @@ done
 rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
-NODE_PATH=$(command -v npm || echo "/usr/local/bin/npm")
-bashio::log.info "Starting Homepage using $NODE_PATH..."
-exec "$NODE_PATH" start --prefix /app
+bashio::log.info "Starting Homepage server..."
+
+# Navigate to the app directory and start the server directly with node
+cd /app
+exec node src/server.js
