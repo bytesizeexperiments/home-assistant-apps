@@ -22,21 +22,28 @@ for file in settings.yaml services.yaml widgets.yaml bookmarks.yaml docker.yaml;
     fi
 done
 
-# --- DYNAMIC AUTOMATION BLOCK ---
+# --- FIXED DYNAMIC AUTOMATION BLOCK ---
 bashio::log.info "Dynamically detecting Ingress slug..."
 
-# Get the slug automatically from the Supervisor API via bashio
+# Use the more reliable bashio config call to get the slug
 SLUG=$(bashio::addon.slug)
-INGRESS_BASE="/api/hassio_ingress/${SLUG}/"
+if [ -z "$SLUG" ]; then
+    # Fallback: Try to get it from the hostname if bashio fails
+    SLUG=$(hostname)
+fi
 
+INGRESS_BASE="/api/hassio_ingress/${SLUG}/"
 bashio::log.info "Detected slug: ${SLUG}. Setting base to ${INGRESS_BASE}"
+
+# Ensure settings.yaml exists before editing
+touch "$SETTINGS_FILE"
 
 # Remove any existing 'base:' lines to avoid duplicates
 sed -i '/^base:/d' "$SETTINGS_FILE"
 
 # Prepend the correct dynamic base path to the top of settings.yaml
 echo "base: ${INGRESS_BASE}" | cat - "$SETTINGS_FILE" > temp && mv temp "$SETTINGS_FILE"
-# ----------------------------
+# --------------------------------------
 
 # Link the persistent HA folder
 rm -rf "$INTERNAL_CONFIG"
