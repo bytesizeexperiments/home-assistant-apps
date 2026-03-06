@@ -15,7 +15,7 @@ panel_icon: "mdi:home-screen"
 panel_title: "Homepage"
 # This creates the UI for port selection
 ports:
-  3000/tcp: 3000
+  3005/tcp: 3005
 map:
   - config:rw  # Maps to /config/homepage in HA
 docker_api: true # Allows Homepage to auto-discover other containers
