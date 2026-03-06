@@ -33,7 +33,5 @@ rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
 bashio::log.info "Starting Homepage..."
-
-# Since we installed npm in the Dockerfile, we can use the standard start command
 cd /app
-exec npm start
+exec node src/server.js
