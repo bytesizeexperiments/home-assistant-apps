@@ -36,8 +36,17 @@ ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
-bashio::log.info "Starting Homepage server..."
+bashio::log.info "Locating Node.js..."
 
-# Navigate to the app and call node directly from the system path
+# Try to find the node path dynamically
+NODE_PATH=$(find /usr -name node -type f -executable -print -quit 2>/dev/null || which node)
+
+if [ -z "$NODE_PATH" ]; then
+    bashio::log.error "Node.js not found! App cannot start."
+    exit 1
+fi
+
+bashio::log.info "Starting Homepage server using $NODE_PATH..."
+
 cd /app
-exec node src/server.js
+exec "$NODE_PATH" src/server.js
