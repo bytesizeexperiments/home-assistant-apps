@@ -1,9 +1,6 @@
 ARG BUILD_FROM=gethomepage/homepage:latest
 FROM $BUILD_FROM
 
-# Change this 'CACHE_DATE' value to force a total rebuild
-ENV CACHE_DATE=2026-03-06-v1
-
 # Professional Labels
 LABEL \
   io.hass.name="Homepage" \
@@ -12,7 +9,7 @@ LABEL \
   org.opencontainers.image.authors="Byte Size Experiments" \
   org.opencontainers.image.source="https://github.com/gethomepage/homepage"
 
-# Install bash/jq for bashio
+# Install bash/jq for bashio functions
 RUN apk add --no-cache curl bash jq
 
 # Install bashio
@@ -23,9 +20,11 @@ RUN curl -J -L -o /tmp/bashio.tar.gz https://github.com/hassio-addons/bashio/arc
     && ln -sf /usr/lib/bashio/bashio /usr/bin/bashio \
     && rm -rf /tmp/bashio.tar.gz /tmp/bashio
 
-WORKDIR /app
-
+# Set production environment
 ENV NODE_ENV=production
+ENV HOMEPAGE_CONFIG_DIR=/app/config
+
+WORKDIR /app
 
 COPY run.sh /
 RUN chmod a+x /run.sh
