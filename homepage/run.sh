@@ -33,5 +33,6 @@ rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
 bashio::log.info "Starting Homepage..."
+
 cd /app
-exec node src/server.js
+exec node server.js
