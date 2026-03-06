@@ -4,6 +4,7 @@ version: "1.10.1"
 slug: "homepage"
 url: "https://github.com/gethomepage/homepage"
 maintainer: "Byte Size Experiments"
+init: false
 arch:
   - aarch64
   - amd64
