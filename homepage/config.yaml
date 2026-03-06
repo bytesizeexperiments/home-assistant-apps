@@ -18,5 +18,5 @@ panel_title: "Homepage"
 ports:
   3005/tcp: 3005
 map:
-  - config:rw  # Maps to /config/homepage in HA
+  - addon_config:rw # Maps to /config/homepage in HA
 docker_api: true # Allows Homepage to auto-discover other containers
