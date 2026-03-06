@@ -1,6 +1,9 @@
 ARG BUILD_FROM=gethomepage/homepage:latest
 FROM $BUILD_FROM
 
+# Change this 'CACHE_DATE' value to force a total rebuild
+ENV CACHE_DATE=2026-03-06-v1
+
 # Professional Labels
 LABEL \
   io.hass.name="Homepage" \
