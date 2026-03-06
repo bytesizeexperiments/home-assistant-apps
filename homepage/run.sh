@@ -32,9 +32,12 @@ done
 rm -rf "$INTERNAL_CONFIG"
 ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
 
-# Determine Node path and start
-NODE_BIN=$(which node || echo "/usr/local/bin/node")
+# Link the persistent HA folder
+rm -rf "$INTERNAL_CONFIG"
+ln -s "$CONFIG_DIR" "$INTERNAL_CONFIG"
+
 bashio::log.info "Starting Homepage server..."
 
+# Navigate to the app and call node directly from the system path
 cd /app
-exec "$NODE_BIN" src/server.js
+exec node src/server.js

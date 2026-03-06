@@ -1,15 +1,16 @@
 ARG BUILD_FROM=gethomepage/homepage:latest
 FROM $BUILD_FROM
 
-# Professional Labels
+# Change CACHE_DATE to force a fresh pull of the base image
+ENV CACHE_DATE=2026-03-06-v4
+
+# Labels...
 LABEL \
   io.hass.name="Homepage" \
   io.hass.description="Packaged by Byte Size Experiments" \
-  io.hass.type="addon" \
-  org.opencontainers.image.authors="Byte Size Experiments" \
-  org.opencontainers.image.source="https://github.com/gethomepage/homepage"
+  io.hass.type="addon"
 
-# Install bash/jq for bashio functions
+# Install bash/jq for bashio
 RUN apk add --no-cache curl bash jq
 
 # Install bashio
@@ -20,10 +21,8 @@ RUN curl -J -L -o /tmp/bashio.tar.gz https://github.com/hassio-addons/bashio/arc
     && ln -sf /usr/lib/bashio/bashio /usr/bin/bashio \
     && rm -rf /tmp/bashio.tar.gz /tmp/bashio
 
-# Set production environment
-ENV NODE_ENV=production
-ENV HOMEPAGE_CONFIG_DIR=/app/config
-
+# Crucial: Ensure the container's node path is preserved
+ENV PATH="/usr/local/bin:/usr/bin:${PATH}"
 WORKDIR /app
 
 COPY run.sh /
