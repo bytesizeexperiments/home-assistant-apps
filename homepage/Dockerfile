@@ -9,11 +9,10 @@ LABEL \
   org.opencontainers.image.authors="Byte Size Experiments" \
   org.opencontainers.image.source="https://github.com/gethomepage/homepage"
 
-# 1. Install dependencies (bash is required for run.sh, curl for downloading bashio)
+# Install bash/jq for bashio
 RUN apk add --no-cache curl bash jq
 
-# 2. Install bashio correctly
-# We use 'mkdir -p' to ensure the path exists and 'ln -sf' to FORCE the link if it exists
+# Install bashio
 RUN curl -J -L -o /tmp/bashio.tar.gz https://github.com/hassio-addons/bashio/archive/v0.16.2.tar.gz \
     && mkdir -p /tmp/bashio \
     && tar zxvf /tmp/bashio.tar.gz --strip 1 -C /tmp/bashio \
