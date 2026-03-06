@@ -1,4 +1,7 @@
-#!/usr/bin/with-contenv bashio
+#!/usr/bin/env bash
+
+# Load bashio functions manually since we aren't using the HA base image
+source /usr/lib/bashio/bashio.sh
 
 # HA Maps addon_config to /addon_config in the container
 CONFIG_DIR="/addon_config"

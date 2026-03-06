@@ -10,7 +10,7 @@ arch:
 startup: "application"
 boot: "auto"
 ingress: true
-ingress_port: 3000
+ingress_port: 3005
 panel_icon: "mdi:home-screen"
 panel_title: "Homepage"
 # This creates the UI for port selection

@@ -1,6 +1,6 @@
 configuration:
   3000/tcp:
     name: "Dashboard Port"
-    description: "The local port that the Homepage dashboard will be accessible on (Default: 3000)."
+    description: "The local port that the Homepage dashboard will be accessible on (Default: 3005)."
 network:
   3000/tcp: "The web interface for the Homepage dashboard"
