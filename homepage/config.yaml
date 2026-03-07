@@ -1,14 +1,22 @@
-# config.yaml
 name: "Homepage"
 description: "The highly customizable dashboard for your homelab."
 version: "1.10.1"
 slug: "homepage"
+url: "https://github.com/gethomepage/homepage"
+maintainer: "Byte Size Experiments"
+init: false
+arch:
+  - aarch64
+  - amd64
 startup: "application"
 boot: "auto"
 ingress: true
-ingress_port: 3000 # Homepage internal default is 3000
+ingress_port: 3005
 panel_icon: "mdi:home-screen"
 panel_title: "Homepage"
+# This creates the UI for port selection
+ports:
+  3005/tcp: 3005
 map:
   - addon_config:rw
-docker_api: true
+docker_api: true # Allows Homepage to auto-discover other containers
