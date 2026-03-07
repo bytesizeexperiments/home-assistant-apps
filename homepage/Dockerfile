@@ -1,7 +1,9 @@
 ARG BUILD_FROM=ghcr.io/gethomepage/homepage:latest
 FROM $BUILD_FROM
 
-# Add bashio requirements
+# Switch to root to install bashio and set permissions
+USER root
+
 RUN apk add --no-cache curl bash jq
 
 # Install bashio
@@ -12,9 +14,11 @@ RUN curl -J -L -o /tmp/bashio.tar.gz https://github.com/hassio-addons/bashio/arc
     && ln -sf /usr/lib/bashio/bashio /usr/bin/bashio \
     && rm -rf /tmp/bashio.tar.gz /tmp/bashio
 
-# Use the internal path the official image expects
 WORKDIR /app
 COPY run.sh /
 RUN chmod a+x /run.sh
+
+# Ensure the app directory is writable by root/bashio during startup
+RUN chown -R root:root /app
 
 CMD [ "/run.sh" ]
