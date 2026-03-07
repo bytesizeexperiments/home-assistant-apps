@@ -1,40 +1,30 @@
 #!/usr/bin/env bash
-
-# Load bashio functions
 source /usr/lib/bashio/bashio.sh
 
-CONFIG_DIR="/addon_config"
-SETTINGS_FILE="$CONFIG_DIR/settings.yaml"
+# 1. Setup paths
+HA_CONFIG_DIR="/addon_config"
+TMP_CONFIG_DIR="/tmp/homepage_config"
+mkdir -p "$HA_CONFIG_DIR"
+mkdir -p "$TMP_CONFIG_DIR"
 
-bashio::log.info "Checking for existing Homepage configuration..."
-mkdir -p "$CONFIG_DIR"
-
-# --- DYNAMIC SLUG DETECTION ---
-bashio::log.info "Dynamically detecting Ingress slug..."
-
+# 2. Get the Dynamic Slug
 SLUG=$(curl -s -X GET \
     -H "Authorization: Bearer ${SUPERVISOR_TOKEN}" \
     -H "Content-Type: application/json" \
     http://supervisor/addons/self/info | jq -r '.data.slug')
 
-if [ -z "$SLUG" ] || [ "$SLUG" == "null" ]; then
-    SLUG=$(hostname)
-fi
-
 INGRESS_BASE="/api/hassio_ingress/${SLUG}/"
-bashio::log.info "Detected slug: ${SLUG}. Setting base to ${INGRESS_BASE}"
+bashio::log.info "Setting Ingress base to ${INGRESS_BASE}"
 
-# Ensure settings.yaml exists and remove old base lines
-touch "$SETTINGS_FILE"
-sed -i '/^base:/d' "$SETTINGS_FILE"
+# 3. Create the settings file in TMP first
+echo "base: ${INGRESS_BASE}" > "${TMP_CONFIG_DIR}/settings.yaml"
 
-# Prepend the correct dynamic base path
-echo "base: ${INGRESS_BASE}" | cat - "$SETTINGS_FILE" > temp && mv temp "$SETTINGS_FILE"
-# ------------------------------
+# 4. Copy everything from TMP to the actual HA folder
+# This forces the files onto the persistent storage
+cp -r ${TMP_CONFIG_DIR}/* ${HA_CONFIG_DIR}/
 
-# --- THE FIX ---
-# Instead of symlinks, we tell Homepage EXACTLY where to look
-export HOMEPAGE_CONFIG_DIR="/addon_config"
+# 5. Tell Homepage to look at the HA folder
+export HOMEPAGE_CONFIG_DIR="${HA_CONFIG_DIR}"
 
 bashio::log.info "Starting Homepage..."
 cd /app
