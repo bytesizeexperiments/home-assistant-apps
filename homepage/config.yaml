@@ -17,7 +17,7 @@ ingress: false
 
 # Homepage listens on port 3000 internally
 ports:
-  3000/tcp: 3000
+  3010/tcp: 3000
 
 # Persist configuration
 map:
